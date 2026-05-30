@@ -1,0 +1,37 @@
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# 数据文件（包含 API 调用缓存和数据库）
+data/
+
+# 输出文件（日报/周报/分析报告）
+output/
+
+# 临时文件
+tmp_repos/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 配置文件（含本地修改）
+config.yaml
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 日志
+logs/
+*.log

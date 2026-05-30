@@ -1,0 +1,73 @@
+# AI信息助手 - 配置文件
+# 复制为 config.yaml 后修改
+
+# ====== AI 后端（DeepSeek 通过 Anthropic 兼容层） ======
+# API key 和 base_url 从环境变量读取：
+#   ANTHROPIC_AUTH_TOKEN=sk-xxx
+#   ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic
+#   ANTHROPIC_MODEL=deepseek-v4-pro[1m]
+ai:
+  model: "deepseek-v4-pro[1m]"
+  max_tokens: 8000
+  temperature: 0.3
+
+# ====== 数据源开关 ======
+sources:
+  arxiv:
+    enabled: true
+    categories: ["cs.AI", "cs.CL", "cs.CV", "cs.LG", "cs.RO", "cs.MA"]
+    max_results: 30
+    days_back: 1
+
+  github:
+    enabled: true
+    languages: ["python", "javascript", "rust", "jupyter-notebook"]
+    topics: ["ai", "machine-learning", "deep-learning", "llm", "agent"]
+    max_repos: 15
+
+  paperswithcode:
+    enabled: true
+    max_results: 15
+
+  hackernews:
+    enabled: true
+    keywords: ["AI", "LLM", "GPT", "Claude", "OpenAI", "deep learning", "agent", "NLP"]
+    max_posts: 20
+
+  twitter:
+    enabled: false                       # 需要VPN
+    accounts: ["kaboroev", "_akhaliq", "ai_zona"]
+    max_tweets_per_account: 10
+
+  scholar:
+    enabled: false                       # 需要VPN
+    keywords: ["large language model", "reinforcement learning"]
+    max_results: 10
+
+  cn_sources:
+    enabled: true
+    sources:
+      - name: "量子位"
+        rss: "https://www.qbitai.com/feed"
+
+# ====== 报告设置 ======
+report:
+  daily:
+    top_n: 10
+    include_cn: true
+    output_format: "markdown"
+
+  weekly:
+    top_n: 20
+    include_cn: true
+    output_format: "markdown"
+
+# ====== 深度分析 ======
+deepdive:
+  clone_dir: "./tmp_repos"
+  auto_cleanup: true
+
+# ====== 日志 ======
+logging:
+  level: "INFO"
+  file: "logs/assistant.log"
