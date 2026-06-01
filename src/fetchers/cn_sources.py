@@ -2,29 +2,43 @@
 国内AI资讯抓取器
 - RSS 解析（机器之心、量子位等）
 - 不需要 VPN
+- 数据源列表从 config.yaml 读取，config 即唯一事实来源
 """
 
 import httpx
 import feedparser
+from pathlib import Path
+import yaml
 from storage import cache
 
 
-CN_SOURCES = [
-    {
-        "name": "量子位",
-        "rss": "https://www.qbitai.com/feed",
-    },
-    # 机器之心 RSS 已关闭（302到 /data-service 需登录），暂时移除
-]
+def _load_sources() -> list[dict]:
+    """从 config.yaml 读取国内数据源配置，读取失败时使用兜底默认源"""
+    config_path = Path(__file__).parent.parent.parent / "config.yaml"
+    try:
+        if not config_path.exists():
+            raise FileNotFoundError("config.yaml not found")
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = yaml.safe_load(f)
+        sources = config.get("sources", {}).get("cn_sources", {}).get("sources", [])
+        if not sources:
+            raise ValueError("config.yaml 中 cn_sources.sources 为空")
+        return sources
+    except Exception as e:
+        print(f"  ⚠️ 读取 cn_sources 配置失败 ({e})，使用兜底默认源")
+        return [
+            {"name": "量子位", "rss": "https://www.qbitai.com/feed"},
+        ]
 
 
 async def fetch(max_per_source: int = 10) -> list[dict]:
     """
     抓取国内AI资讯 RSS
     """
+    sources = _load_sources()
     all_articles = []
 
-    for source in CN_SOURCES:
+    for source in sources:
         name = source["name"]
         rss_url = source["rss"]
 

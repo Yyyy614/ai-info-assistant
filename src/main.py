@@ -232,8 +232,10 @@ async def run_weekly(config: dict):
     print(f"  ✅ 周报已生成: {weekly_path}")
 
 
-def run_schedule(config: dict):
-    """启动定时任务（工作日早9点自动跑日报）"""
+def run_schedule(config: dict, mode: str = "weekly"):
+    """启动定时任务
+    mode: daily(工作日早9点日报) / weekly(每周一早9点周报)
+    """
     try:
         import schedule
         import time as time_module
@@ -241,20 +243,25 @@ def run_schedule(config: dict):
         print("⚠️ 请先安装 schedule: pip install schedule")
         return
 
-    async def daily_job():
-        await run_daily(config)
+    if mode == "daily":
+        async def job_async():
+            await run_daily(config)
+        def job():
+            asyncio.run(job_async())
+        schedule.every().monday.at("09:00").do(job)
+        schedule.every().tuesday.at("09:00").do(job)
+        schedule.every().wednesday.at("09:00").do(job)
+        schedule.every().thursday.at("09:00").do(job)
+        schedule.every().friday.at("09:00").do(job)
+        print("⏰ 定时任务已启动：工作日 09:00 自动生成日报")
+    else:
+        async def job_async():
+            await run_weekly(config)
+        def job():
+            asyncio.run(job_async())
+        schedule.every().monday.at("09:00").do(job)
+        print("⏰ 定时任务已启动：每周一 09:00 自动生成周报（回顾上周）")
 
-    def job():
-        asyncio.run(daily_job())
-
-    # 工作日早9点（周一到周五）
-    schedule.every().monday.at("09:00").do(job)
-    schedule.every().tuesday.at("09:00").do(job)
-    schedule.every().wednesday.at("09:00").do(job)
-    schedule.every().thursday.at("09:00").do(job)
-    schedule.every().friday.at("09:00").do(job)
-
-    print("⏰ 定时任务已启动：工作日 09:00 自动生成日报")
     print("   按 Ctrl+C 停止")
     print()
 
@@ -326,7 +333,11 @@ def main():
             print("  python main.py deepdive --repo https://github.com/xxx/yyy")
             print("  python main.py deepdive --paper https://arxiv.org/abs/XXXX.XXXXX")
     elif command == "schedule":
-        run_schedule(config)
+        mode = "weekly"  # 默认周报
+        for i, arg in enumerate(sys.argv):
+            if arg == "--mode" and i + 1 < len(sys.argv):
+                mode = sys.argv[i + 1]
+        run_schedule(config, mode)
     elif command == "config":
         show_config(config)
     else:

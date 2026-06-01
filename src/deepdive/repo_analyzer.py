@@ -52,6 +52,12 @@ def _call_ai(prompt: str, max_tokens: int = 8000) -> str | None:
         for block in message.content:
             if hasattr(block, "text"):
                 return block.text
+        # 如果只有 ThinkingBlock（DeepSeek 短响应），取 thinking 内容
+        if message.content:
+            first = message.content[0]
+            if hasattr(first, "thinking"):
+                return first.thinking
+            return str(first)
         return None
     except Exception as e:
         print(f"  ❌ API调用失败: {e}")

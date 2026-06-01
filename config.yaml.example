@@ -26,8 +26,7 @@ sources:
     max_repos: 15
 
   paperswithcode:
-    enabled: true
-    max_results: 15
+    enabled: false                      # 需要VPN；开VPN后手动改为true
 
   hackernews:
     enabled: true

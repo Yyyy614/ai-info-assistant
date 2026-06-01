@@ -77,7 +77,7 @@ async def fetch(categories: list[str], days_back: int = 1, max_results: int = 30
         resp = None
         for attempt in range(retries):
             try:
-                async with httpx.AsyncClient(timeout=30, headers={
+                async with httpx.AsyncClient(timeout=60, headers={
                     "User-Agent": "AI-Info-Assistant/1.0"
                 }) as client:
                     resp = await client.get(ARXIV_API_URL, params=params)
